@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"bufio"
 )
 
 func check(err error){
@@ -14,27 +15,44 @@ func check(err error){
 }
 
 func CalculateNumberOfBytes(path string) int {
-	absPath, err := filepath.Abs(path)
-	check(err)
-
-	f, err := os.ReadFile(absPath)
+	f, err := os.ReadFile(path)
 	check(err)
 
 	return len(f)
 }
 
 func CalculateNumberOfLines(path string) int {
+	f, err := os.Open(path)
+	check(err)
+
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+
+	count := 0
+	for scanner.Scan() {
+		count++
+	}
+
+	return count
+}
+
+func CalculateNumberOfWords(path string) int {
 
 }
 
 
 func main() {
 	args := os.Args
-
 	path := args[2]
+	absPath, err := filepath.Abs(path)
+	var res int
 	switch cliOption := args[1]; cliOption {
 		case "-c":
-			nob := CalculateNumberOfBytes(path)
-			fmt.Printf("%d %s\n", nob, path)
+			res = CalculateNumberOfBytes(absPath)
+			check(err)
+		case "-l":
+			res = CalculateNumberOfLines(absPath)
 	}
+	fmt.Printf("%d %s\n", res, path)
 }
