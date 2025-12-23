@@ -37,9 +37,6 @@ func CalculateNumberOfLines(path string) int {
 	return count
 }
 
-func CalculateNumberOfWords(path string) int {
-
-}
 
 
 func main() {
