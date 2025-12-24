@@ -55,6 +55,15 @@ func CalculateNumberOfWords(path string) int {
 	return count
 }
 
+func CalculateNumberOfCharacters(path string) int {
+	f, err := os.ReadFile(path)
+	check(err)
+
+	r := []rune(string(f))
+
+	return len(r)
+}
+
 func main() {
 	args := os.Args
 	path := args[2]
@@ -68,6 +77,8 @@ func main() {
 		res = CalculateNumberOfLines(absPath)
 	case "-w":
 		res = CalculateNumberOfWords(absPath)
+	case "-m":
+		res = CalculateNumberOfCharacters(absPath)
 	}
 	fmt.Printf("%d %s\n", res, path)
 }
