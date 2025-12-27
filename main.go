@@ -92,9 +92,9 @@ func main() {
 	flags := *bytePtr || *linePtr || *wordPtr || *charPtr
 	
 	commands := make(map[string][]int)
-	// total := make([]int, 0)
+	total := make(map[int]int, 4)
 
-	var l, c, w int
+	var l, c, w, m int
 
 	var largest int
 	for _, v := range filePaths {
@@ -106,20 +106,61 @@ func main() {
 			w = CalculateNumberOfWords(f)
 			c = CalculateNumberOfBytes(f)
 			
-
 			largest = max(l, c, w, largest)
 
+			total[0] += l
+			total[1] += w
+			total[2] += c
+
 			commands[v] = []int{l, w, c}
-		}		
+		} else {
+			commands[v] = []int{}
+			idx := 0
+
+			if *linePtr {
+				l = CalculateNumberOfLines(f)
+				commands[v] = append(commands[v], l)
+				total[idx] += l
+				idx++
+			}
+			if *wordPtr {
+				w = CalculateNumberOfWords(f)
+				commands[v] = append(commands[v], w)
+				total[idx] += w
+				idx++
+			}
+			if *bytePtr {
+				c = CalculateNumberOfBytes(f)
+				commands[v] = append(commands[v], c)
+				total[idx] += c
+				idx++
+			}
+			if *charPtr {
+				m = CalculateNumberOfCharacters(f)
+				commands[v] = append(commands[v], m)
+				total[idx] += m
+				idx++
+			}
+
+			largest = max(l, w, c, m, largest)
+		}
 	}
 
 	var s strings.Builder
-	for k, v := range commands {
+	for _, path := range filePaths {
+		v := commands[path]
 		for _, j  := range v {
-			s .WriteString(formatToString(j, largest) + " ")
+			s.WriteString(formatToString(j, largest) + " ")
 		}
 
-		s .WriteString(k + "\n")
+		s .WriteString(path + "\n")
+	}
+	
+	if len(filePaths) > 1 {
+		for i := 0; i < len(total); i++ {
+			s.WriteString(formatToString(total[i], largest) + " ")
+		}
+		s.WriteString("total\n")
 	}
 	
 	fmt.Printf("%s", s.String())
