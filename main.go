@@ -1,11 +1,15 @@
 package main
 
 import (
+	// "strings"
+	"strings"
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 func check(err error) {
@@ -64,21 +68,59 @@ func CalculateNumberOfCharacters(path string) int {
 	return len(r)
 }
 
-func main() {
-	args := os.Args
-	path := args[2]
-	absPath, err := filepath.Abs(path)
-	var res int
-	switch cliOption := args[1]; cliOption {
-	case "-c":
-		res = CalculateNumberOfBytes(absPath)
-		check(err)
-	case "-l":
-		res = CalculateNumberOfLines(absPath)
-	case "-w":
-		res = CalculateNumberOfWords(absPath)
-	case "-m":
-		res = CalculateNumberOfCharacters(absPath)
+func formatToString(x int, largest int) string{
+	s := strconv.Itoa(x)
+	cap := len([]rune(strconv.Itoa(largest))) - len([]rune(s))
+	for range cap {
+		s = " " + s
 	}
-	fmt.Printf("%d %s\n", res, path)
+	return s
+}
+
+
+
+func main() {
+	bytePtr := flag.Bool("c", false, "print the byte counts")
+	linePtr := flag.Bool("l", false, "print the line counts")
+	wordPtr := flag.Bool("w", false, "print the word counts")
+	charPtr := flag.Bool("m", false, "print the char counts")
+
+	flag.Parse()
+
+	filePaths := flag.Args()
+
+	flags := *bytePtr || *linePtr || *wordPtr || *charPtr
+	
+	commands := make(map[string][]int)
+	// total := make([]int, 0)
+
+	var l, c, w int
+
+	var largest int
+	for _, v := range filePaths {
+		f, err := filepath.Abs(v)
+		check(err)
+
+		if !flags {
+			l = CalculateNumberOfLines(f)
+			w = CalculateNumberOfWords(f)
+			c = CalculateNumberOfBytes(f)
+			
+
+			largest = max(l, c, w, largest)
+
+			commands[v] = []int{l, w, c}
+		}		
+	}
+
+	var s strings.Builder
+	for k, v := range commands {
+		for _, j  := range v {
+			s .WriteString(formatToString(j, largest) + " ")
+		}
+
+		s .WriteString(k + "\n")
+	}
+	
+	fmt.Printf("%s", s.String())
 }
