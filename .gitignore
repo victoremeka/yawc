@@ -1,1 +1,16 @@
 build/
+
+# Binaries
+main
+yawc
+
+# Archives
+*.tar.gz
+*.zip
+
+# Checksums
+checksums.txt
+
+# OS/editor
+.DS_Store
+*.swp
