@@ -1,9 +1,12 @@
 # YAWC (Yet Another WC)
 A custom wc tool written in Golang.
 
+## Install
+Download from [Releases](https://github.com/victoremeka/yawc/releases) or build from source.
+
 ## Usage
 ```
-./main [options] file...
+yawc [options] file...
 ```
 
 ## Options
@@ -16,5 +19,5 @@ No flags defaults to lines, words, bytes.
 
 ## Build
 ```
-go build -o main
+go build -o yawc
 ```
